@@ -1,41 +1,36 @@
-# ONS_PRODUCTIVITY_UTILITIES
+# OdooTools
 
-Le but de ce module est de fournir des utilitaires pour nos développements.
-Les outils sont accessibles à travers la variable global Odoo et nécessite souvent un objet `env`
+Set of tools for Odoo developpement
 
 ```python
-from odoo import ONS
+import OdooTools
 ```
-
-Les sous-modules se trouvent dans l'objet ONS
-
-
 
 ## Debug
 
-Set d'utilitaire servant à débug du code
+Debug utilities
 
 ```python
 from odoo.ONS import debug
 ```
 
-* **print_func_code**: print le code d'une fonction et son héritage (permet de savoir le chemin parcouru par une fonction)
+* **print_func_code**: print function code and its inheritance (considering loading order)
 
   ```python
   print_func_code(env, model, function)
   ```
 
-  * env: environnement odoo
-  * model: string du model, e.g. "sale.order"
-  * function: fonction à analyser, e.g. "onchange_partner_id"
+  * env: odoo environnement
+  * model: model _name value, e.g. "sale.order"
+  * function: function to analyse, e.g. "onchange_partner_id"
 
-* **printTraceBack**: print le chemin parcouru dans Odoo pour arriver à l'endroit où est appelé cette fonction
+* **printTraceBack**: print the call path up to this function call
 
   ```python
   printTraceBack(printer)
   ```
 
-  * printer: fonction à utiliser pour le display, par défaut utilise "print", on peut lui donner le logger odoo:
+  * printer: display function, default is "print", we can use the logger from logging library
 
     ```python
     printTraceBack(_logger.critical)
@@ -43,7 +38,7 @@ from odoo.ONS import debug
 
     
 
-* **get_depends_methods**: retourne la liste des dictionnaires keys-function des depends d'un model
+* **get_depends_methods**: return a list of dict containing trigger keys and function object of all "api.depends" of a model
 
   ```python
   for depends in get_onchange_methods(env, model):
@@ -53,15 +48,15 @@ from odoo.ONS import debug
   * env: environnement odoo
   * model: le model dont on veut les depends, e.g. "sale.order"
 
-* **get_onchange_methods**: pareil que get_depends_methods mais pour les onchange
+* **get_onchange_methods**: same as get_depends_methods but for "api.onchange"
 
-* **analyse_depends**: appel print_func_code sur tous les résultat de  get_depends_methods
+* **analyse_depends**: call print_func_code on get_depends_methods result
 
   ```python
   analyse_depends(env, model)
   ```
 
-* **analyse_onchange**: appel print_func_code sur tous les résultat de  get_onchange_methods
+* **analyse_onchange**: call print_func_code on get_onchange_methods result
 
   ```python
   analyse_onchange(env, model)
@@ -71,24 +66,24 @@ from odoo.ONS import debug
 
 ## Records
 
-Set d'utilitaire servant sur les records Odoo.
+Tools to handle recordset
 
-* **groupby**: sert à regrouper un recordset selon les attributs donnés
+* **groupby**: group recordset according to list of key (or key getter)
 
   ```python
   groupby(records, attributes)
   ```
 
-  * records: recordset à regrouper
-  * attributs: liste de clef de regroupement, les clefs peuvent être:
-    * une string de l'attribut voulu, e.g. `"name"`
-    * une fonction retournant une clef de regroupement, e.g. `lambda line: line.move_id.sale_line_id.order_id`
+  * records: recordset to group
+  * attributs: list of grouping key, that can be either:
+    * an object attribute's name as string, e.g. `"name"`
+    * a function taking a record and returning the key, e.g. `lambda line: line.move_id.sale_line_id.order_id`
 
-  Exemple concrès:
+  Example:
 
   ```python
   lines = self.mapped("move_line_ids").filtered("result_package_id")
-  grouped = ons_groupby(lines, [
+  grouped = groupby(lines, [
       "result_package_id",
       "picking_id",
       lambda line: line.move_id.sale_line_id.order_id,
