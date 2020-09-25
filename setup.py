@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='odoo_utilities',  
-    version='0.1',
+    version='0.2',
     author="Gallay David",
     author_email="davidtennis96@hotmail.com",
     description="Set of tools for Odoo ERP",

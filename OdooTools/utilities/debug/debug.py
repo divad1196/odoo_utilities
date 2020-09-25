@@ -12,23 +12,20 @@ _logger = logging.getLogger(__name__)
 def get_model(env, model_name):
     return type(env[model_name])
 
-def func_analyse(env, model, function):
-    """used to get the class where function is (re-)defined"""
-    m = get_model(env, model)
-    return [cls for cls in m.__mro__ if function in cls.__dict__]
-
-
 def source(f):
     return inspect.getsource(f)
 
 
 def func_code_analyse(env, model, function):
     """get a list with the source code of the function through all inheritance """
+    m = get_model(env, model)
     return ["""model: {model}\nmodule: {module}\n\n{source}""".format(
         model=cls,
         module=cls.__module__,
         source=source(getattr(cls,function)))
-        for cls in func_analyse(env, model, function)]
+        for cls in m.__mro__
+        if function in cls.__dict__
+    ]
 
 
 def func_like_code_analyse(env, model, function):
@@ -65,9 +62,6 @@ def func_like_code_analyse(env, model, function):
 def get_attr(m, attr):
     el = inspect.getmembers(m)
     return [e for e in el if e[0].find(attr) != -1]
-
-def printn(it):
-    print(next(it))
 
 
 def print_func_code(env, model, function):
@@ -135,9 +129,9 @@ def get_depends_methods(env, model):
 def analyse_onchange(env, model):
     for name, func in _get_onchange_methods(env, model):
         print_func_code(env, model, name)
-        print("\n\n\u001b[34m" + ("="*30) + "\n" + ("="*30) + "\u001b[0m\n\n")
+        print("\n\n\u001b[34m" + ("=" * 30) + "\n" + ("=" * 30) + "\u001b[0m\n\n")
 
 def analyse_depends(env, model):
     for name, func in _get_depends_methods(env, model):
         print_func_code(env, model, name)
-        print("\n\n\u001b[34m" + ("="*30) + "\n" + ("="*30) + "\u001b[0m\n\n")
+        print("\n\n\u001b[34m" + ("=" * 30) + "\n" + ("=" * 30) + "\u001b[0m\n\n")

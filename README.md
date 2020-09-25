@@ -46,7 +46,7 @@ from odoo.ONS import debug
   ```
 
   * env: environnement odoo
-  * model: le model dont on veut les depends, e.g. "sale.order"
+  * model: model from which to extract depends methods, e.g. "sale.order"
 
 * **get_onchange_methods**: same as get_depends_methods but for "api.onchange"
 
@@ -75,7 +75,7 @@ Tools to handle recordset
   ```
 
   * records: recordset to group
-  * attributs: list of grouping key, that can be either:
+  * attributes: list of grouping key, that can be either:
     * an object attribute's name as string, e.g. `"name"`
     * a function taking a record and returning the key, e.g. `lambda line: line.move_id.sale_line_id.order_id`
 
@@ -94,5 +94,17 @@ Tools to handle recordset
               print(records)
   ```
 
-  
 
+
+
+## Datetime
+
+Tools to handle date and datetime.
+
+* **client_specific_to_utc**: There 's some cases where you need to convert a datetime for the write, for example a datetime built from the controller
+
+  ```python
+  utc_date = client_specific_to_utc(env, mydate)
+  ```
+
+  
