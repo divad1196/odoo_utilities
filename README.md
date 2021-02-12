@@ -94,7 +94,20 @@ Tools to handle recordset
               print(records)
   ```
 
+* **set_fold_groupby**
 
+  ```python
+  @api.model
+  def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+      res = super(Note, self).read_group(
+      	domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy
+      )
+      set_fold_groupby(self, res, groupby, groupby_field="ons_stage_id")
+  
+  	return res
+  ```
+
+  
 
 
 ## Datetime

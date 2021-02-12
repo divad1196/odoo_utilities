@@ -41,3 +41,26 @@ def groupby(records, attributes):
         key: groupby(records, attributes)
         for key, records in grouped_records.items()
     }
+
+
+
+
+
+def set_fold_groupby(self, res, groupby, groupby_field, undefined_default=False):
+    if groupby and groupby[0] == groupby_field:
+        field = getattr(self, groupby_field, None)
+        comodel_name = (
+            field and
+            getattr(field, "relational", None) and
+            getattr(field, "comodel_name", None)
+        )
+        if not comodel_name:
+            return
+        # Nb: order is preserved and undefined is False
+        group_ids = self.env[comodel_name].browse([
+            g[groupby_field] and g[groupby_field][0]
+            for g in res
+        ])
+        # We might get something like: "comodel_name(2, 3, 4, False)" which is valid
+        for index, group_id in enumerate(group_ids):
+            res[index]["__fold"] = group_id.fold if group_id.id else undefined_default 
