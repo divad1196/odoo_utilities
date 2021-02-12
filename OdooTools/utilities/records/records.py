@@ -46,9 +46,13 @@ def groupby(records, attributes):
 
 
 
+
 def set_fold_groupby(self, res, groupby, groupby_field, undefined_default=False):
+    # Ensure that this is a list
+    if isinstance(groupby, str):
+        groupby = [groupby]
     if groupby and groupby[0] == groupby_field:
-        field = getattr(self, groupby_field, None)
+        field = getattr(type(self), groupby_field, None)
         comodel_name = (
             field and
             getattr(field, "relational", None) and
