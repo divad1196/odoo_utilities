@@ -93,9 +93,24 @@ def print_field(env, model, field):
 def getParents():
     return inspect.getouterframes(inspect.currentframe())
 
+
+def extract_frameinfo(frameinfo):
+    self = frameinfo.frame.f_locals.get("self")
+    _name = self and getattr(type(self), "_name", None)
+    return (frameinfo.function, _name, frameinfo.filename)
+
+def get_odoo_stack():
+    return [
+        extract_frameinfo(x)
+        for x in reversed(getParents())
+    ]
+
 def printTraceBack(printer=print):
     """ Print the Traceback of the function call """
-    for x in reversed(getParents()[2:]): printer(x.function)
+    for function, model, filename in get_odoo_stack()[:-3]:
+        printer(
+            "{:<30}\t{:<30}\t{}".format(function, model or "unkown", filename)
+        )
 
 # NB:
 # getParents()[2:] retire les 2 premiers enfants de la list, à savoir la fonction getParents et print*Traceback
